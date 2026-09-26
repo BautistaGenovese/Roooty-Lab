@@ -14,9 +14,14 @@ const METHOD_ROUTES = {
   'Simpson 3/8': '/integracion/simpson38',
   'Gauss-Jordan': '/matrices/gauss-jordan',
   'Eliminación Gaussiana': '/matrices/gaussiana',
+  'Euler': '/edos/euler',
+  'Heun': '/edos/heun',
+  'Punto Medio': '/edos/punto-medio',
+  'Ralston': '/edos/ralston',
 }
 
 const MATRIX_METHODS = ['Eliminación Gaussiana', 'Gauss-Jordan']
+const EDO_METHODS = ['Euler', 'Heun', 'Punto Medio', 'Ralston']
 
 function timeAgo(date) {
   const seconds = Math.floor((new Date() - date) / 1000)
@@ -27,7 +32,7 @@ function timeAgo(date) {
   return `Hace ${hours}h ${minutes % 60}min`
 }
 
-function HistoryCard({ entry }) {
+function HistoryCard({ entry, onRemove }) {
   const navigate = useNavigate()
 
   const handleRerun = () => {
@@ -74,7 +79,7 @@ function HistoryCard({ entry }) {
         </div>
       )}
 
-      {entry.raiz == null && (
+      {entry.raiz == null && !EDO_METHODS.includes(entry.method) && (
         <div className={`history-card-result${MATRIX_METHODS.includes(entry.method) ? '' : ' history-card-result--fail'}`}>
           <span className="history-result-label">
             {MATRIX_METHODS.includes(entry.method) ? '✓ Sistema resuelto' : 'No convergió'}
@@ -82,19 +87,46 @@ function HistoryCard({ entry }) {
         </div>
       )}
 
-      <button className="btn btn-secondary history-rerun-btn" onClick={handleRerun}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="1 4 1 10 7 10"></polyline>
-          <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
-        </svg>
-        Volver a ejecutar
-      </button>
+      {EDO_METHODS.includes(entry.method) && (
+        <div className="history-card-result">
+          <span className="history-result-label">
+            ✓ EDO Resuelta
+          </span>
+        </div>
+      )}
+
+      <div style={{ display: 'flex', gap: '8px', width: '100%', marginTop: 'auto' }}>
+        <button className="btn btn-secondary history-rerun-btn" onClick={handleRerun} style={{ flex: 1, margin: 0 }}>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="1 4 1 10 7 10"></polyline>
+            <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path>
+          </svg>
+          Volver a ejecutar
+        </button>
+        <button
+          className="btn-clear-matrix"
+          onClick={onRemove}
+          title="Eliminar del historial"
+          style={{
+            padding: '10px',
+            minWidth: '40px',
+            width: '40px',
+            flexShrink: 0,
+            margin: 0
+          }}
+        >
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <polyline points="3 6 5 6 21 6"></polyline>
+            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        </button>
+      </div>
     </div>
   )
 }
 
 export default function Historial() {
-  const { entries, markSeen, clear } = useHistory()
+  const { entries, markSeen, clear, removeItem } = useHistory()
 
   useEffect(() => {
     markSeen()
@@ -126,7 +158,7 @@ export default function Historial() {
       ) : (
         <div className="history-list">
           {entries.map(entry => (
-            <HistoryCard key={entry.id} entry={entry} />
+            <HistoryCard key={entry.id} entry={entry} onRemove={() => removeItem(entry.id)} />
           ))}
         </div>
       )}

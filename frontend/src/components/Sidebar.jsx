@@ -4,7 +4,8 @@ import { useHistory } from '../hooks/useHistory'
 import {
   IconHome, IconBiseccion, IconRegulaFalsi, IconNewton,
   IconSecante, IconPuntoFijo, IconRegresion, IconComparacion,
-  IconTrapecio, IconSimpson, IconHistory, IconGaussJordan, IconMatrices
+  IconTrapecio, IconSimpson, IconHistory, IconGaussJordan, IconMatrices,
+  IconEuler, IconHeun, IconPuntoMedio, IconRalston
 } from './Icons'
 
 const LINKS = {
